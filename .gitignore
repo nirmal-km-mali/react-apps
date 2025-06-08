@@ -1,0 +1,47 @@
+# Node modules (for all React apps inside)
+**/node_modules/
+
+# Build output (CRA, Vite, etc.)
+**/build/
+**/dist/
+
+# Environment files (don't expose secrets!)
+**/.env
+**/.env.*.local
+
+# Logs
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Testing coverage
+**/coverage/
+
+# Editor configs
+**/.vscode/
+**/.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Mac system files
+**/.DS_Store
+
+# Cache folders
+**/.cache/
+**/.turbo/
+**/.parcel-cache/
+
+# ESLint, TypeScript, etc.
+**/.eslintcache
+**/*.tsbuildinfo
+
+# Optional: skip local dev databases or temp files
+**/*.local
+**/*.log
+
+# Optional: skip system files
+Thumbs.db
+ehthumbs.db
