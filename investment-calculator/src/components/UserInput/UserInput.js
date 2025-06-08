@@ -18,7 +18,13 @@ const UserInput = (props) => {
     }
 
     const resetHandler = (event) => {
-        setUserInput(initialUserInput);
+        setUserInput({
+            'current-savings': '',
+            'yearly-contribution': '',
+            'expected-return': '',
+            'duration': '',
+        });
+        props.onReset();
     }
 
     const inputChangeHandler = (input, value) => {

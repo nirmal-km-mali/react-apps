@@ -33,9 +33,9 @@ const App = () => {
     return (
         <div>
             <Header />
-            <UserInput onCalculate={calculateHandler} />
+            <UserInput onCalculate={calculateHandler} onReset={() => setUserInput(null)} />
             {!userInput && <p style={{ textAlign: 'center' }}>No investment calculated yet.</p>}
-            {userInput && <ResultsTable data={yearlyData} initialInvestment={userInput['current-savings']} />}
+            {userInput && yearlyData.length > 0 && <ResultsTable data={yearlyData} initialInvestment={userInput['current-savings']} />}
         </div>
     );
 }
