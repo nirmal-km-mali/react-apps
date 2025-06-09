@@ -23,6 +23,10 @@ const ExpenseForm = (props) => {
     const submitHandler = (event) => {
         event.preventDefault();
 
+        if (enteredTitle.trim().length === 0 || enteredAmount.trim().length === 0 || enteredDate.trim().length === 0) {
+            return;
+        }
+
         const expenseData = {
             title: enteredTitle,
             amount: +enteredAmount,
@@ -34,6 +38,9 @@ const ExpenseForm = (props) => {
         setEnteredAmount('');
         setEnteredDate('');
     };
+
+    const isPosting = props.isPosting;
+    const error = props.error;
 
     return (
         <form onSubmit={submitHandler}>
@@ -54,6 +61,8 @@ const ExpenseForm = (props) => {
             <div className='new-expense__actions'>
                 <button type='submit'>Add Expense</button>
             </div>
+            {isPosting && <p className='new-expense__error'>Adding Expense...</p>}
+            {error && <p className='new-expense__error'>{error}</p>}
         </form>
     );
 }

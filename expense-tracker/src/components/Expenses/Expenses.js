@@ -5,7 +5,7 @@ import { useState } from "react";
 import ExpensesList from "./ExpensesList";
 import ExpensesChart from "./ExpensesChart";
 
-function Expenses(props) {
+function Expenses({ items, loading, error }) {
     const currentYear = new Date().getFullYear().toString();
     const [filteredYear, setFilteredYear] = useState(currentYear);
 
@@ -13,7 +13,7 @@ function Expenses(props) {
         setFilteredYear(selectedYear);
     };
 
-    const filteredExpenses = props.items.filter((expense) => {
+    const filteredExpenses = items.filter((expense) => {
         return expense.date.getFullYear().toString() === filteredYear;
     });
 
@@ -22,7 +22,9 @@ function Expenses(props) {
             <Card className="expenses">
                 <ExpensesFilter selected={filteredYear} onChangeFilter={filterChangeHandler} />
                 <ExpensesChart expenses={filteredExpenses} />
-                <ExpensesList items={filteredExpenses} />
+                {loading && <p style={{ color: 'white', textAlign: 'center' }}>Loading expenses...</p>}
+                {error && <p style={{ color: 'white', textAlign: 'center' }}>{error}</p>}
+                {!loading && !error && <ExpensesList items={filteredExpenses} />}
             </Card>
         </>
     );

@@ -1,80 +1,68 @@
 import Expenses from './components/Expenses/Expenses';
 import NewExpense from './components/NewExpense/NewExpense';
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import useHttp from './hooks/use-http';
 
 const App = () => {
 
     const [expenses, setExpenses] = useState([]);
+    const {
+        sendRequest: postExpense,
+        isLoading: isPosting,
+        error: postError
+    } = useHttp();
 
-    useEffect(() => {
-        const fetchExpenses = async () => {
-            try {
-                const response = await fetch('https://expense-tracker-6b16c-default-rtdb.firebaseio.com/expenses.json');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch expenses!');
-                }
+    const {
+        sendRequest: fetchExpenses,
+        isLoading: isFetching,
+        error: fetchError
+    } = useHttp();
 
-                const data = await response.json();
-                const loadedExpenses = [];
-
-                for (const key in data) {
-                    loadedExpenses.push({
-                        id: key,
-                        title: data[key].title,
-                        amount: data[key].amount,
-                        date: new Date(data[key].date),
-                    });
-                }
-
-                setExpenses(loadedExpenses);
-            } catch (error) {
-                console.error(error);
+    const updateExpenses = useCallback(() => {
+        const transformExpenses = (data) => {
+            const loadedExpenses = [];
+            for (const key in data) {
+                loadedExpenses.push({
+                    id: key,
+                    title: data[key].title,
+                    amount: data[key].amount,
+                    date: new Date(data[key].date),
+                });
             }
+            setExpenses(loadedExpenses);
         };
 
-        fetchExpenses();
-    }, []);
+        fetchExpenses(
+            { url: 'https://expense-tracker-6b16c-default-rtdb.firebaseio.com/expenses.json' },
+            transformExpenses
+        );
+    }, [fetchExpenses]);
 
-    const addExpenseHandler = async (expense) => {
-        try {
-            const response = await fetch('https://expense-tracker-6b16c-default-rtdb.firebaseio.com/expenses.json', {
-                method: 'POST',
-                body: JSON.stringify({
-                    title: expense.title,
-                    amount: expense.amount,
-                    date: expense.date.toISOString(),
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+    useEffect(() => {
+        updateExpenses();
+    }, [updateExpenses]);
 
-            if (!response.ok) {
-                throw new Error('Failed to save expense!');
-            }
-
-            const data = await response.json();
-
-            const newExpense = {
-                id: data.name,
-                ...expense,
-            };
-
-            setExpenses((prevExpenses) => {
-                return [newExpense, ...prevExpenses];
-            });
-
-        } catch (error) {
-            console.error('Error adding expense:', error);
-        }
+    const addExpenseHandler = (expense) => {
+        setExpenses((prevExpenses) => [expense, ...prevExpenses]);
     };
 
     return (
         <div>
-            <NewExpense onAddExpense={addExpenseHandler} />
-            <Expenses items={expenses} />
+            <NewExpense
+                onAddExpense={addExpenseHandler}
+                postExpense={postExpense}
+                loading={isPosting}
+                error={postError}
+                onExpenseSaved={updateExpenses}
+            />
+            <Expenses
+                items={expenses}
+                loading={isFetching}
+                error={fetchError}
+                fetchExpenses={updateExpenses}
+            />
         </div>
     );
-}
+};
 
 export default App;
